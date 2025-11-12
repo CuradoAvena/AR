@@ -1,0 +1,41 @@
+using UnityEngine;
+
+// Este script se usa para navegar entre un grupo de paneles (ej. Pág 1, Pág 2, Pág 3)
+// asegurándose de que solo uno esté visible a la vez.
+
+public class PanelNavigator : MonoBehaviour
+{
+    // 1. ARRASTRA AQUÍ TODOS LOS PANELES QUE ESTE SCRIPT DEBE CONTROLAR
+    public GameObject[] panelesDelGrupo;
+
+    // 2. ARRASTRA AQUÍ EL PANEL QUE DEBE APARECER PRIMERO
+    public GameObject panelInicial;
+
+    void Start()
+    {
+        // Al empezar, mostramos solo el panel inicial.
+        MostrarPanel(panelInicial);
+    }
+
+    // --------------------------------------------------------------------
+    // FUNCIÓN PÚBLICA PARA LOS BOTONES
+    // --------------------------------------------------------------------
+    
+    // Esta es la única función que tus alumnos usarán en sus botones OnClick()
+    public void MostrarPanel(GameObject panelAMostrar)
+    {
+        // Primero, recorremos la lista completa y ocultamos TODOS los paneles
+        foreach (GameObject panel in panelesDelGrupo)
+        {
+            if (panel != null)
+                panel.SetActive(false);
+        }
+
+        // Luego, activamos SOLAMENTE el panel que el botón nos pidió
+        if (panelAMostrar != null)
+        {
+            panelAMostrar.SetActive(true);
+        }
+    }
+}
+
