@@ -1,0 +1,82 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+// Este script (TouchManager) se coloca en la ARCamera
+
+public class TouchManager : MonoBehaviour
+{
+    [Header("Mecánica A (Minijuego)")]
+    public string nombreEscenaMinijuego = "Escena_Minijuego";
+
+    [Header("Mecánica B (Panel UI)")]
+    public GameObject panelDeInformacion; // Arrastrar el Panel del alumno aquí
+
+    private Camera arCamera;
+
+    void Start()
+    {
+        arCamera = Camera.main; // Obtiene la ARCamera automáticamente
+        
+        if (panelDeInformacion != null)
+            panelDeInformacion.SetActive(false);
+    }
+
+    // UPDATE ES EL ÚNICO LUGAR QUE CAMBIAMOS
+    void Update()
+    {
+
+#if UNITY_EDITOR
+        if (Input.GetMouseButtonDown(0)) // 0 = Clic Izquierdo
+        {
+            // Si hubo clic, llamamos a nuestra función de lógica
+            HandleInteraction(Input.mousePosition);
+        }
+#endif
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            // Si hubo toque, llamamos a la misma función de lógica
+            HandleInteraction(Input.GetTouch(0).position);
+        }
+    }
+
+    void HandleInteraction(Vector3 screenPosition)
+    {
+        // Lanzar un Raycast desde la posición
+        Ray rayo = arCamera.ScreenPointToRay(screenPosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(rayo, out hit))
+       {
+            if (hit.collider.CompareTag("Mecanica_A"))
+            {
+                Debug.Log("TOCADO: Mecánica A - Cargando Minijuego");
+                SceneManager.LoadScene(nombreEscenaMinijuego);
+            }
+
+            if (hit.collider.CompareTag("Mecanica_B"))
+            {
+                Debug.Log("TOCADO: Mecánica B - Mostrando Panel");
+                if (panelDeInformacion != null)
+                    panelDeInformacion.SetActive(true);
+            }
+
+            if (hit.collider.CompareTag("Mecanica_C"))
+            {
+                Debug.Log("TOCADO: Mecánica C - Activando Efecto");
+
+                AudioSource audio = hit.collider.GetComponent<AudioSource>();
+                if (audio != null) audio.Play();
+
+                ParticleSystem vfx = hit.collider.GetComponent<ParticleSystem>();
+                if (vfx != null) vfx.Play();
+            }
+        }
+    }
+
+    public void CerrarPanelInfo()
+    {
+        if (panelDeInformacion != null)
+            panelDeInformacion.SetActive(false);
+    }
+}
